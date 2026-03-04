@@ -42,7 +42,7 @@ function ToolsSettings({ isOpen, onClose }) {
   const [mcpServerTools, setMcpServerTools] = useState({});
   const [mcpToolsLoading, setMcpToolsLoading] = useState({});
   const [activeTab, setActiveTab] = useState('tools');
-  const [selectedModel, setSelectedModel] = useState('gemini-3.0-flash');
+  const [selectedModel, setSelectedModel] = useState('auto');
   const [enableNotificationSound, setEnableNotificationSound] = useState(false);
 
   // Common tool patterns
@@ -66,8 +66,12 @@ function ToolsSettings({ isOpen, onClose }) {
 
   // Available Gemini models (tested and verified)
   const availableModels = [
-    { value: 'gemini-3.0-flash', label: 'Gemini 3.0 Flash', description: 'Fast and efficient latest model (Recommended)' },
-    { value: 'gemini-3.0-pro', label: 'Gemini 3.0 Pro', description: 'Most advanced model (Note: May have quota limits)' }
+    { value: 'auto', label: 'Auto (Gemini 3)', description: 'Automatically select the best model' },
+    { value: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro Preview', description: 'Most advanced preview model' },
+    { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash Preview', description: 'Fast preview model' },
+    { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', description: 'Most advanced stable model' },
+    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', description: 'Fast and efficient stable model' },
+    { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite', description: 'Lightest and fastest model' }
   ];
 
   // MCP API functions

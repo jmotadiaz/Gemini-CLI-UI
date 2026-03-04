@@ -179,9 +179,11 @@ async function spawnGemini(command, options = {}, ws) {
 
     // Add model for all sessions (both new and resumed)
     // Debug - Model from options and resume session
-    const modelToUse = options.model || 'gemini-3.0-flash';
+    const modelToUse = options.model || 'auto';
     // Debug - Using model
-    args.push('--model', modelToUse);
+    if (modelToUse !== 'auto') {
+      args.push('--model', modelToUse);
+    }
 
     // Add --yolo flag if skipPermissions is enabled
     if (settings.skipPermissions) {
