@@ -42,7 +42,7 @@ function ToolsSettings({ isOpen, onClose }) {
   const [mcpServerTools, setMcpServerTools] = useState({});
   const [mcpToolsLoading, setMcpToolsLoading] = useState({});
   const [activeTab, setActiveTab] = useState('tools');
-  const [selectedModel, setSelectedModel] = useState('gemini-2.5-flash');
+  const [selectedModel, setSelectedModel] = useState('gemini-3.0-flash');
   const [enableNotificationSound, setEnableNotificationSound] = useState(false);
 
   // Common tool patterns
@@ -63,11 +63,11 @@ function ToolsSettings({ isOpen, onClose }) {
     'WebFetch',
     'WebSearch'
   ];
-  
+
   // Available Gemini models (tested and verified)
   const availableModels = [
-    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', description: 'Fast and efficient latest model (Recommended)' },
-    { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', description: 'Most advanced model (Note: May have quota limits)' }
+    { value: 'gemini-3.0-flash', label: 'Gemini 3.0 Flash', description: 'Fast and efficient latest model (Recommended)' },
+    { value: 'gemini-3.0-pro', label: 'Gemini 3.0 Pro', description: 'Most advanced model (Note: May have quota limits)' }
   ];
 
   // MCP API functions
@@ -75,9 +75,9 @@ function ToolsSettings({ isOpen, onClose }) {
     try {
       // MCP endpoints are not implemented yet - skip these calls
       return;
-      
+
       const token = localStorage.getItem('auth-token');
-      
+
       // First try to get servers using Gemini CLI
       const cliResponse = await fetch('/api/mcp/cli/list', {
         headers: {
@@ -85,7 +85,7 @@ function ToolsSettings({ isOpen, onClose }) {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (cliResponse.ok) {
         const cliData = await cliResponse.json();
         if (cliData.success && cliData.servers) {
@@ -110,7 +110,7 @@ function ToolsSettings({ isOpen, onClose }) {
           return;
         }
       }
-      
+
       // Fallback to direct config reading
       const response = await fetch('/api/mcp/servers?scope=user', {
         headers: {
@@ -118,7 +118,7 @@ function ToolsSettings({ isOpen, onClose }) {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setMcpServers(data.servers || []);
@@ -133,12 +133,12 @@ function ToolsSettings({ isOpen, onClose }) {
   const saveMcpServer = async (serverData) => {
     try {
       const token = localStorage.getItem('auth-token');
-      
+
       if (editingMcpServer) {
         // For editing, remove old server and add new one
         await deleteMcpServer(editingMcpServer.id, 'user');
       }
-      
+
       // Use Gemini CLI to add the server
       const response = await fetch('/api/mcp/cli/add', {
         method: 'POST',
@@ -156,7 +156,7 @@ function ToolsSettings({ isOpen, onClose }) {
           env: serverData.config?.env || {}
         })
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
@@ -178,7 +178,7 @@ function ToolsSettings({ isOpen, onClose }) {
   const deleteMcpServer = async (serverId, scope = 'user') => {
     try {
       const token = localStorage.getItem('auth-token');
-      
+
       // Use Gemini CLI to remove the server
       const response = await fetch(`/api/mcp/cli/remove/${serverId}`, {
         method: 'DELETE',
@@ -187,7 +187,7 @@ function ToolsSettings({ isOpen, onClose }) {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
@@ -216,7 +216,7 @@ function ToolsSettings({ isOpen, onClose }) {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return data.testResult;
@@ -241,7 +241,7 @@ function ToolsSettings({ isOpen, onClose }) {
         },
         body: JSON.stringify(formData)
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return data.testResult;
@@ -265,7 +265,7 @@ function ToolsSettings({ isOpen, onClose }) {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return data.toolsResult;
@@ -287,17 +287,17 @@ function ToolsSettings({ isOpen, onClose }) {
 
   const loadSettings = async () => {
     try {
-      
+
       // Load from localStorage
       const savedSettings = localStorage.getItem('gemini-tools-settings');
-      
+
       if (savedSettings) {
         const settings = JSON.parse(savedSettings);
         setAllowedTools(settings.allowedTools || []);
         setDisallowedTools(settings.disallowedTools || []);
         setSkipPermissions(settings.skipPermissions || false);
         setProjectSortOrder(settings.projectSortOrder || 'name');
-        setSelectedModel(settings.selectedModel || 'gemini-2.5-flash');
+        setSelectedModel(settings.selectedModel || 'gemini-3.0-flash');
         setEnableNotificationSound(settings.enableNotificationSound || false);
       } else {
         // Set defaults
@@ -322,7 +322,7 @@ function ToolsSettings({ isOpen, onClose }) {
   const saveSettings = () => {
     setIsSaving(true);
     setSaveStatus(null);
-    
+
     try {
       const settings = {
         allowedTools,
@@ -333,11 +333,11 @@ function ToolsSettings({ isOpen, onClose }) {
         enableNotificationSound,
         lastUpdated: new Date().toISOString()
       };
-      
-      
+
+
       // Save to localStorage
       localStorage.setItem('gemini-tools-settings', JSON.stringify(settings));
-      
+
       // Trigger storage event for current window
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'gemini-tools-settings',
@@ -346,9 +346,9 @@ function ToolsSettings({ isOpen, onClose }) {
         storageArea: localStorage,
         url: window.location.href
       }));
-      
+
       setSaveStatus('success');
-      
+
       setTimeout(() => {
         onClose();
       }, 1000);
@@ -421,9 +421,9 @@ function ToolsSettings({ isOpen, onClose }) {
 
   const handleMcpSubmit = async (e) => {
     e.preventDefault();
-    
+
     setMcpLoading(true);
-    
+
     try {
       await saveMcpServer(mcpFormData);
       resetMcpForm();
@@ -454,13 +454,13 @@ function ToolsSettings({ isOpen, onClose }) {
       const result = await testMcpServer(serverId, scope);
       setMcpTestResults({ ...mcpTestResults, [serverId]: result });
     } catch (error) {
-      setMcpTestResults({ 
-        ...mcpTestResults, 
-        [serverId]: { 
-          success: false, 
+      setMcpTestResults({
+        ...mcpTestResults,
+        [serverId]: {
+          success: false,
           message: error.message,
           details: []
-        } 
+        }
       });
     }
   };
@@ -471,14 +471,14 @@ function ToolsSettings({ isOpen, onClose }) {
       const result = await discoverMcpTools(serverId, scope);
       setMcpServerTools({ ...mcpServerTools, [serverId]: result });
     } catch (error) {
-      setMcpServerTools({ 
-        ...mcpServerTools, 
-        [serverId]: { 
-          success: false, 
-          tools: [], 
-          resources: [], 
-          prompts: [] 
-        } 
+      setMcpServerTools({
+        ...mcpServerTools,
+        [serverId]: {
+          success: false,
+          tools: [],
+          resources: [],
+          prompts: []
+        }
       });
     } finally {
       setMcpToolsLoading({ ...mcpToolsLoading, [serverId]: false });
@@ -575,7 +575,7 @@ function ToolsSettings({ isOpen, onClose }) {
           </div>
 
           <div className="p-4 md:p-6 space-y-6 md:space-y-8 pb-safe-area-inset-bottom">
-            
+
             {/* Appearance Tab */}
             {activeTab === 'appearance' && (
               <div className="space-y-6 md:space-y-8">
@@ -649,7 +649,7 @@ function ToolsSettings({ isOpen, onClose }) {
             {/* Tools Tab */}
             {activeTab === 'tools' && (
               <div className="space-y-6 md:space-y-8">
-            
+
             {/* Model Selection */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -680,7 +680,7 @@ function ToolsSettings({ isOpen, onClose }) {
                 </div>
               </div>
             </div>
-            
+
             {/* Skip Permissions */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -769,7 +769,7 @@ function ToolsSettings({ isOpen, onClose }) {
               <p className="text-sm text-muted-foreground">
                 Tools that are automatically allowed without prompting for permission
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={newAllowedTool}
@@ -850,7 +850,7 @@ function ToolsSettings({ isOpen, onClose }) {
               <p className="text-sm text-muted-foreground">
                 Tools that are automatically blocked without prompting for permission
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={newDisallowedTool}
@@ -912,7 +912,7 @@ function ToolsSettings({ isOpen, onClose }) {
                 <li><code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">"Bash(rm:*)"</code> - Block all rm commands (dangerous)</li>
               </ul>
             </div>
-            
+
               </div>
             )}
           </div>
@@ -938,16 +938,16 @@ function ToolsSettings({ isOpen, onClose }) {
             )}
           </div>
           <div className="flex items-center gap-3 order-1 sm:order-2">
-            <Button 
-              variant="outline" 
-              onClick={onClose} 
+            <Button
+              variant="outline"
+              onClick={onClose}
               disabled={isSaving}
               className="flex-1 sm:flex-none h-10 touch-manipulation"
             >
               Cancel
             </Button>
-            <Button 
-              onClick={saveSettings} 
+            <Button
+              onClick={saveSettings}
               disabled={isSaving}
               className="flex-1 sm:flex-none h-10 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 touch-manipulation"
             >
